@@ -35,7 +35,10 @@ def do_train():
     tokenizer = BertTokenizerFast.from_pretrained(args.model)
     model = UIE.from_pretrained(args.model)
     if args.device == 'gpu':
-        model = model.cuda()
+        # model = model.cuda()
+        # 一机多卡训练
+        model.to(device)
+        model = nn.DataParallel(model)
     train_ds = IEDataset(args.train_path, tokenizer=tokenizer,
                          max_seq_len=args.max_seq_len)
     dev_ds = IEDataset(args.dev_path, tokenizer=tokenizer,
